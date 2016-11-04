@@ -142,17 +142,16 @@ var gameOfLife = {
 
     document.getElementById("step_btn").addEventListener('click', function(e){
       gameOfLifeObj.step();
-    })
+    });
     document.getElementById("clear_btn").addEventListener('click', function(e){
       gameOfLifeObj.clearBoard();
-    })
+    });
     document.getElementById("reset_btn").addEventListener('click', function(e){
       gameOfLifeObj.resetRandom();
-    })
-
+    });
     document.getElementById("play_btn").addEventListener('click', function(e){
       gameOfLifeObj.enableAutoPlay();
-    })
+    });
     
   },
 
