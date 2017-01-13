@@ -1,218 +1,150 @@
-var gameOfLife = {
-  width: 12,
-  height: 12, // width and height dimensions of the board
-  stepInterval: null, // should be used to hold reference to an interval that is "playing" the game
-  
-  createAndShowBoard: function () {
-    // create <table> element
-    var goltable = document.createElement("tbody");
-    
-    // build Table HTML
-    var tablehtml = '';
-    for (var h=0; h<this.height; h++) {
-      tablehtml += "<tr id='row+" + h + "'>";
-      for (var w=0; w<this.width; w++) {
-        tablehtml += "<td data-status='dead' id='" + w + "-" + h + "'></td>";
-      }
-      tablehtml += "</tr>";
-    }
-    goltable.innerHTML = tablehtml;
-    
-    // add table to the #board element
-    var board = document.getElementById('board');
-    board.appendChild(goltable);
-    
-    // once html elements are added to the page, attach events to them
-    this.setupBoardEvents();
-  }, 
+/*********** ES6 Concepts ***********
+ * const
+ * template literals
+ * Array.from()
+ *************************************/
 
-  forEachCell: function (iteratorFunc) {
-    
-    /* 
-      Write forEachCell here. You will have to visit
-      each cell on the board, call the "iteratorFunc" function,
-      and pass into func, the cell and the cell's x & y
-      coordinates. For example: iteratorFunc(cell, x, y)
-    */
-    var self = this;    
-    Array.from(document.getElementsByTagName('td')).forEach(function(cell){
-      var coords = self.getCoordsOfCell(cell);
-      iteratorFunc(cell, coords[0], coords[1]);
-    })
-    // Alternative approach with for loops
-    // var cell;
-    // for(var i = 0; i < this.height; i++){
-    //   for(var j = 0; j < this.width; j++){
-    //     cell = document.getElementById(`${j}-${i}`);
-    //     iteratorFunc(cell, i, j);
-    //   }
-    // }
+const gameOfLife = {
+    width: 12,
+    height: 12, // width and height dimensions of the board
+    stepInterval: null, // should be used to hold reference to an interval that is "playing" the game
 
+    // Utility functions
+    forEachCell: function(iteratorFunc) {
+        // es6 Array.from() creates a new Array from an iterable : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from
+        Array.from(document.getElementsByTagName('td')).forEach(cell => {
+            const coords = this.getCoordsOfCell(cell);
+            iteratorFunc(cell, coords[0], coords[1]);
+        })
+    },
+    getCoordsOfCell: function(cell) {
+        const idSplit = cell.id.split('-'); // ['0', '0']
 
-  },
+        // es6 Arrow Functions are lexical in scope : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
+          // Lexical Scoping defines how variable names are resolved in nested functions: inner functions contain the scope of parent functions even if the parent function has returned.
+        // `+` before a string we can coerce a string into a number
+        return idSplit.map(str => +str)
+    },
+    getCellStatus: function(cell) {
+        return cell.getAttribute('data-status');
+    },
+    setCellStatus: function(cell, status) {
+        cell.className = status;
+        return cell.setAttribute('data-status', status)
+    },
+    toggleCellStatus: function(cell) {
 
-  // Utility functions
-  getCoordsOfCell: function(cell){
-    var cellId = cell.id;  // '0-0'
-    var idSplit = cellId.split('-'); // ['0', '0']
-
-    return idSplit.map(function(str){
-      return parseInt(str,10);
-    })
-
-  },
-  getCellStatus: function(cell){
-    return cell.getAttribute('data-status');
-  },
-  setCellStatus: function(cell, status){
-    cell.className = status;
-    cell.setAttribute('data-status', status)
-  },
-  toggleCellStatus: function(cell){
-    if (this.getCellStatus(cell) == 'dead') {
-        this.setCellStatus(cell,"alive");
-      } else {
-        this.setCellStatus(cell,"dead");
-      }
-  },
-  getNeighbors: function(cell){
-    var neighbors = [];
-    var thisCellCoords = this.getCoordsOfCell(cell);
-    var cellX = thisCellCoords[0];
-    var cellY = thisCellCoords[1];
-    
-    // Directly to left and right
-    neighbors.push(this.selectCell(cellX-1, cellY));
-    neighbors.push(this.selectCell(cellX+1, cellY));
-
-    // Row Above
-    neighbors.push(this.selectCell(cellX, cellY-1));
-    neighbors.push(this.selectCell(cellX+1, cellY-1));
-    neighbors.push(this.selectCell(cellX-1, cellY-1));
-
-    // Row Below
-    neighbors.push(this.selectCell(cellX, cellY+1));
-    neighbors.push(this.selectCell(cellX+1, cellY+1));
-    neighbors.push(this.selectCell(cellX-1, cellY+1));
-
-    return neighbors.filter(function(neighbor){
-      return neighbor !== null;
-    })
-    
-  },
-  getAliveNeighbors: function(cell){
-    var allNeighbors = this.getNeighbors(cell);
-    var gameOfLifeObj = this;
-    return allNeighbors.filter(function(neighbor){
-      return gameOfLifeObj.getCellStatus(neighbor) === "alive";
-    })
-  },
-  selectCell: function(x,y){
-    return document.getElementById(`${x}-${y}`);
-  },
-  
-  // Game   
-  setupBoardEvents: function() {
-    // each board cell has an CSS id in the format of: "x-y" 
-    // where x is the x-coordinate and y the y-coordinate
-    // use this fact to loop through all the ids and assign
-    // them "on-click" events that allow a user to click on 
-    // cells to setup the initial state of the game
-    // before clicking "Step" or "Auto-Play"
-    
-    // clicking on a cell should toggle the cell between "alive" & "dead"
-    // for ex: an "alive" cell be colored "blue", a dead cell could stay white
-    
-    // EXAMPLE FOR ONE CELL
-    // Here is how we would catch a click event on just the 0-0 cell
-    // You need to add the click event on EVERY cell on the board
-    var gameOfLifeObj = this;
-    
-    var onCellClick = function (e) {
-      // QUESTION TO ASK YOURSELF: What is "this" equal to here?
-      
-      // how to set the style of the cell when it's clicked
-      gameOfLifeObj.toggleCellStatus(this);
-    };
-
-    this.forEachCell(function(cell){           
-      cell.onclick = onCellClick;
-    });
-
-    // Buttons
-
-    document.getElementById("step_btn").addEventListener('click', function(e){
-      gameOfLifeObj.step();
-    });
-    document.getElementById("clear_btn").addEventListener('click', function(e){
-      gameOfLifeObj.clearBoard();
-    });
-    document.getElementById("reset_btn").addEventListener('click', function(e){
-      gameOfLifeObj.resetRandom();
-    });
-    document.getElementById("play_btn").addEventListener('click', function(e){
-      gameOfLifeObj.enableAutoPlay();
-    });
-    
-  },
-
-  step: function () {
-    // Here is where you want to loop through all the cells
-    // on the board and determine, based on it's neighbors,
-    // whether the cell should be dead or alive in the next
-    // evolution of the game. 
-    //
-    // You need to:
-    // 1. Count alive neighbors for all cells
-    // 2. Set the next state of all cells based on their alive neighbors
-    var gameOfLifeObj = this;
-    var cellsToToggle = [];
-    this.forEachCell(function(cell, x, y){
-      var countLiveNeighbors = gameOfLifeObj.getAliveNeighbors(cell).length;
-
-      if(gameOfLifeObj.getCellStatus(cell) === "alive"){
-        if(countLiveNeighbors !== 2 && countLiveNeighbors !==3){
-          cellsToToggle.push(cell);
+        if (this.getCellStatus(cell) == 'dead') {
+            this.setCellStatus(cell, "alive");
+        } else {
+            this.setCellStatus(cell, "dead");
         }
-      } else {
-        if(countLiveNeighbors === 3) {
-          cellsToToggle.push(cell);
+    },
+    getNeighbors: function (cell) {
+        const neighbors = [];
+        const [cellX, cellY] = this.getCoordsOfCell(cell);
+        for (let i = cellX - 1; i <= cellX + 1; i++) {
+            for (let j = cellY - 1; j <= cellY + 1; j++) {
+                if (i === cellX && j === cellY) continue;
+                neighbors.push(document.getElementById(`${i}-${j}`));
+            }
         }
-      }
-    })
+        return neighbors.filter(neighbor => neighbor);
+    },
+    getAliveNeighbors: function (cell) {
+        var allNeighbors = this.getNeighbors(cell);
+        return allNeighbors.filter(neighbor => this.getCellStatus(neighbor) === "alive");
+    },
 
-    cellsToToggle.forEach(function(cellToToggle){
-      gameOfLifeObj.toggleCellStatus(cellToToggle);
-    })
+    // Game
+    createAndShowBoard: function() {
+        // create <table> element
+        const goltable = document.createElement("tbody");
 
-  },
-  clearBoard: function(){
-    // var gameOfLifeObj = this;
-    this.forEachCell(function(cell){
-      this.setCellStatus(cell, "dead");
-    }.bind(this));
-  },
-  resetRandom: function(){
-    this.forEachCell(function(cell){
-      if(Math.random() > .5){
-        this.setCellStatus(cell, 'alive');
-      } else {
-        this.setCellStatus(cell,'dead');
-      }
-    }.bind(this))
-  },
-  enableAutoPlay: function () {
-    // Start Auto-Play by running the 'step' function
-    // automatically repeatedly every fixed time interval
-    if(this.stepInterval){
-      return this.stopAutoPlay();
+        // build Table HTML
+        let tablehtml = '';
+        for (let h = 0; h < this.height; h++) {
+
+            // es6 Template Literals allow embedded expressions : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+            tablehtml += `<tr id='row+${h}'>`;
+            for (let w = 0; w < this.width; w++) {
+                tablehtml += `<td data-status='dead' id='${w}-${h}'></td>`;
+            }
+            tablehtml += "</tr>";
+        }
+        goltable.innerHTML = tablehtml;
+
+        // add table to the #board element
+        const board = document.getElementById('board');
+        board.appendChild(goltable);
+
+        // once html elements are added to the page, attach events to them
+        this.setupBoardEvents();
+    },
+    setupBoardEvents: function() {
+        // This function sets ups events for the entire board. Specifically onClick events for each cell
+
+
+        // using Event Delegation we can set one onClick handler that bubbles up, and we can tell what was clicked by looking at e.target
+        const onCellClick = e => this.toggleCellStatus(e.target);
+
+        // if attaching click handler to board (event delegation!):
+        document.getElementById('board').onclick = onCellClick;
+
+        // Buttons
+        document.getElementById("step_btn").onclick = () => this.step();
+        document.getElementById("clear_btn").onclick= () => this.clearBoard();
+        document.getElementById("reset_btn").onclick = () => this.resetRandom();
+        document.getElementById("play_btn").onclick = () => this.enableAutoPlay();
+
+    },
+    step: function() {
+        // Logic for each step
+        // We 
+        const cellsToToggle = [];
+        this.forEachCell((cell, x, y) => {
+            var countLiveNeighbors = this.getAliveNeighbors(cell).length;
+
+            if (this.getCellStatus(cell) === "alive") {
+                if (countLiveNeighbors !== 2 && countLiveNeighbors !== 3) {
+                    cellsToToggle.push(cell);
+                }
+            } else {
+                if (countLiveNeighbors === 3) {
+                    cellsToToggle.push(cell);
+                }
+            }
+        })
+
+        cellsToToggle.forEach((cellToToggle) => this.toggleCellStatus(cellToToggle))
+    },
+    clearBoard: function() {
+        // var gameOfLifeObj = this;
+        this.forEachCell(function(cell) {
+            this.setCellStatus(cell, "dead");
+        }.bind(this));
+    },
+    resetRandom: function() {
+        this.forEachCell(function(cell) {
+            if (Math.random() > .5) {
+                this.setCellStatus(cell, 'alive');
+            } else {
+                this.setCellStatus(cell, 'dead');
+            }
+        }.bind(this))
+    },
+    enableAutoPlay: function() {
+        // Start Auto-Play by running the 'step' function
+        // automatically repeatedly every fixed time interval
+        if (this.stepInterval) {
+            return this.stopAutoPlay();
+        }
+        this.stepInterval = setInterval(this.step.bind(this), 500);
+    },
+    stopAutoPlay: function() {
+        clearInterval(this.stepInterval);
+        this.stepInterval = null;
     }
-    this.stepInterval = setInterval(this.step.bind(this), 500);
-  },
-  stopAutoPlay: function(){
-    clearInterval(this.stepInterval);
-    this.stepInterval = null;
-  }
 
 };
 
