@@ -7,11 +7,12 @@
 
 const gameOfLife = {
     width: 12,
-    height: 12, // width and height dimensions of the board
-    stepInterval: null, // should be used to hold reference to an interval that is "playing" the game
+    height: 12, 
+    stepInterval: null,
 
     // Utility functions
     forEachCell: function(iteratorFunc) {
+        
         // es6 Array.from() creates a new Array from an iterable : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from
         Array.from(document.getElementsByTagName('td')).forEach(cell => {
             const coords = this.getCoordsOfCell(cell);
@@ -58,7 +59,7 @@ const gameOfLife = {
 
     // Game
     createAndShowBoard: function() {
-        // create <table> element
+        // create <table> body
         const goltable = document.createElement("tbody");
 
         // build Table HTML
@@ -82,10 +83,11 @@ const gameOfLife = {
         this.setupBoardEvents();
     },
     setupBoardEvents: function() {
-        // This function sets ups events for the entire board. Specifically onClick events for each cell
+        // This function sets ups events for the entire board. Specifically onclick events!
 
 
-        // using Event Delegation we can set one onClick handler that bubbles up, and we can tell what was clicked by looking at e.target
+        // Event Delegation allows us to set one onclick handler that bubbles up (propagates), and we can tell what was clicked by looking at event.target
+          // https://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-flow-bubbling
         const onCellClick = e => this.toggleCellStatus(e.target);
 
         // if attaching click handler to board (event delegation!):
@@ -99,21 +101,16 @@ const gameOfLife = {
 
     },
     step: function() {
-        // Logic for each step
-        // We 
+        // Logic for each step to kill and birth cells
+        // We take a snapshot before, determine everything that should be changed, and THEN change all of the cells
         const cellsToToggle = [];
         this.forEachCell((cell, x, y) => {
-            var countLiveNeighbors = this.getAliveNeighbors(cell).length;
-
+            const countLiveNeighbors = this.getAliveNeighbors(cell).length;
             if (this.getCellStatus(cell) === "alive") {
                 if (countLiveNeighbors !== 2 && countLiveNeighbors !== 3) {
                     cellsToToggle.push(cell);
                 }
-            } else {
-                if (countLiveNeighbors === 3) {
-                    cellsToToggle.push(cell);
-                }
-            }
+            } else if (countLiveNeighbors === 3) cellsToToggle.push(cell);
         })
 
         cellsToToggle.forEach((cellToToggle) => this.toggleCellStatus(cellToToggle))
@@ -122,20 +119,12 @@ const gameOfLife = {
         this.forEachCell((cell) => this.setCellStatus(cell, "dead"));
     },
     resetRandom: function() {
-        this.forEachCell((cell) => {
-            if (Math.random() > .5) {
-                this.setCellStatus(cell, 'alive');
-            } else {
-                this.setCellStatus(cell, 'dead');
-            }
-        })
+
+        // conditional (ternary) operator : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator
+        this.forEachCell((cell) => this.setCellStatus(cell, Math.random() > .5 ? 'alive' : 'dead'))
     },
     enableAutoPlay: function() {
-        // Start Auto-Play by running the 'step' function
-        // automatically repeatedly every fixed time interval
-        if (this.stepInterval) {
-            return this.stopAutoPlay();
-        }
+        if (this.stepInterval) return this.stopAutoPlay();
         this.stepInterval = setInterval(this.step.bind(this), 500);
     },
     stopAutoPlay: function() {
