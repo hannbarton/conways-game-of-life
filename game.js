@@ -1,7 +1,8 @@
 /*********** ES6 Concepts ***********
  * const
- * template literals
  * Array.from()
+ * arrow functions
+ * template literals
  *************************************/
 
 const gameOfLife = {
@@ -33,7 +34,6 @@ const gameOfLife = {
         return cell.setAttribute('data-status', status)
     },
     toggleCellStatus: function(cell) {
-
         if (this.getCellStatus(cell) == 'dead') {
             this.setCellStatus(cell, "alive");
         } else {
@@ -119,19 +119,16 @@ const gameOfLife = {
         cellsToToggle.forEach((cellToToggle) => this.toggleCellStatus(cellToToggle))
     },
     clearBoard: function() {
-        // var gameOfLifeObj = this;
-        this.forEachCell(function(cell) {
-            this.setCellStatus(cell, "dead");
-        }.bind(this));
+        this.forEachCell((cell) => this.setCellStatus(cell, "dead"));
     },
     resetRandom: function() {
-        this.forEachCell(function(cell) {
+        this.forEachCell((cell) => {
             if (Math.random() > .5) {
                 this.setCellStatus(cell, 'alive');
             } else {
                 this.setCellStatus(cell, 'dead');
             }
-        }.bind(this))
+        })
     },
     enableAutoPlay: function() {
         // Start Auto-Play by running the 'step' function
