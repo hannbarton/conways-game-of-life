@@ -107,9 +107,7 @@ const gameOfLife = {
         this.forEachCell((cell, x, y) => {
             const countLiveNeighbors = this.getAliveNeighbors(cell).length;
             if (this.getCellStatus(cell) === "alive") {
-                if (countLiveNeighbors !== 2 && countLiveNeighbors !== 3) {
-                    cellsToToggle.push(cell);
-                }
+              if (countLiveNeighbors < 2 || countLiveNeighbors > 3) cellsToToggle.push(cell);
             } else if (countLiveNeighbors === 3) cellsToToggle.push(cell);
         })
 
