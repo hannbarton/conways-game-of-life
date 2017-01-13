@@ -181,6 +181,7 @@ var gameOfLife = {
       }
     })
 
+    // We have taken a snapshot of everything we need to toggle, now we will apply these changes all at once for the entire board
     cellsToToggle.forEach(function(cellToToggle){
       gameOfLifeObj.toggleCellStatus(cellToToggle);
     })
