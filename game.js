@@ -60,7 +60,9 @@ var gameOfLife = {
     
     window.board.addEventListener('click', e => onCellClick.call(e.target, e))
     window.step_btn.addEventListener('click', e => this.step())
+    window.play_btn.addEventListener('click', e => this.togglePlay())
   },
+  // Neighbors : Cell -> Array Cells
   neighborhood: function(cell) {
     var neighbors = [];
     for(var col = cell.col - 1; col <= cell.col + 1; col++) {
@@ -74,14 +76,15 @@ var gameOfLife = {
     return neighbors
   },
   getNextState: function(cell, row, col) {
-    var livingNeighbors = this.neighborhood(cell).reduce((sum,el) => 
-      sum + (el.dataset.status === 'alive' ? 1 : 0)
-    ,0)
-    console.log('alive', livingNeighbors, row, col, this.neighborhood(cell).map(el => el.dataset.status == 'alive' ? 1 : 0))
+    var livingNeighbors = this.neighborhood(cell)
+      .map(el => el.dataset.status === 'alive' ? 1 : 0)
+      .reduce((sum, alive) => sum + alive,0)
+
     if(cell.dataset.status === 'alive') {
       if(livingNeighbors === 2 || livingNeighbors === 3) return true
       return false
     }
+
     if(livingNeighbors === 3) return true
     return false
   },
@@ -89,10 +92,9 @@ var gameOfLife = {
     var nextState = new Array(this.width).fill('').map(el => []);
 
     //Read state and construct next state
-    this.forEachCell((cell, row, col) => {
-      var theStatus = (cell.dataset.status === 'alive');
-      nextState[col][row] = this.getNextState(cell, row, col);
-    })
+    this.forEachCell((cell, row, col) => 
+      nextState[col][row] = this.getNextState(cell, row, col)
+    )
 
     console.table(nextState)
 
@@ -105,9 +107,13 @@ var gameOfLife = {
 
   },
 
-  enableAutoPlay: function () {
-    // Start Auto-Play by running the 'step' function
-    // automatically repeatedly every fixed time interval  
+  togglePlay: function () {
+    if(this.interval){
+      clearInterval(this.interval);
+      this.interval = null
+    } else {
+      this.interval = setInterval(() => this.step(), 250)
+    } 
   }
   
 };
