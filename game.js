@@ -67,8 +67,9 @@ var gameOfLife = {
       
     };
     
-    var cell00 = document.getElementById('0-0');
-    cell00.addEventListener('click', onCellClick);
+    // var cell00 = document.getElementById('0-0');
+    // cell00.addEventListener('click', onCellClick);
+    window.board.addEventListener('click', e => onCellClick.call(e.target, e))
   },
 
   step: function () {
