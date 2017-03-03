@@ -27,36 +27,26 @@ var gameOfLife = {
     // once html elements are added to the page, attach events to them
     this.setupBoardEvents();
   },
+  //Get cell and attach row/col props so it doesn't get lost/mutated
+  getCell: function(row, col) {
+    var theCell = document.getElementById(col+'-'+row)
+    theCell.col = col;
+    theCell.row = row;
+    return theCell;
+  },
 
-  forEachCell: function (iteratorFunc) {
-    /* 
-      Write forEachCell here. You will have to visit
-      each cell on the board, call the "iteratorFunc" function,
-      and pass into func, the cell and the cell's x & y
-      coordinates. For example: iteratorFunc(cell, x, y)
-    */
+  forEachCell: function (iteratorFunc) { 
+    for(var col = 0; col < this.width; col++) {
+      for(var row = 0; row < this.height; row++) {
+        var theCell = this.getCell(row, col)
+        iteratorFunc(theCell, row, col)
+      }
+    }
   },
   
   setupBoardEvents: function() {
-    // each board cell has an CSS id in the format of: "x-y" 
-    // where x is the x-coordinate and y the y-coordinate
-    // use this fact to loop through all the ids and assign
-    // them "click" events that allow a user to click on 
-    // cells to setup the initial state of the game
-    // before clicking "Step" or "Auto-Play"
-    
-    // clicking on a cell should toggle the cell between "alive" & "dead"
-    // for ex: an "alive" cell be colored "blue", a dead cell could stay white
-    
-    // EXAMPLE FOR ONE CELL
-    // Here is how we would catch a click event on just the 0-0 cell
-    // You need to add the click event on EVERY cell on the board
-    
     var onCellClick = function (e) {
-      
-      // QUESTION TO ASK YOURSELF: What is "this" equal to here?
-      
-      // how to set the style of the cell when it's clicked
+    
       if (this.dataset.status == 'dead') {
         this.className = 'alive';
         this.dataset.status = 'alive';
@@ -67,32 +57,25 @@ var gameOfLife = {
       
     };
     
-    // var cell00 = document.getElementById('0-0');
-    // cell00.addEventListener('click', onCellClick);
     window.board.addEventListener('click', e => onCellClick.call(e.target, e))
     window.step_btn.addEventListener('click', e => this.step())
   },
 
   step: function () {
     var nextState = new Array(this.width).fill('').map(el => []);
-    for(var col = 0; col < this.width; col++) {
-      for(var row = 0; row < this.height; row++) {
-        var theCell = document.getElementById(col+'-'+row)
-        var theStatus = (theCell.dataset.status === 'alive');
-        nextState[col][row] = !theStatus;
-      }
-    }
+
+    this.forEachCell((cell, row, col) => {
+      var theStatus = (cell.dataset.status === 'alive');
+      nextState[col][row] = !theStatus;
+    })
 
     console.table(nextState)
-
-    for(var col = 0; col < this.width; col++) {
-      for(var row = 0; row < this.height; row++) {
-        var theCell = document.getElementById(col+'-'+row)
-        var theStatus = nextState[col][row] ? 'alive' : 'dead';
-        theCell.className = theStatus;
-        theCell.dataset.status = theStatus;
-      }
-    }
+    
+    this.forEachCell((cell, row, col) => {
+      var theStatus = nextState[col][row] ? 'alive' : 'dead';
+      cell.className = theStatus;
+      cell.dataset.status = theStatus;
+    })
 
   },
 
