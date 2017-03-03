@@ -30,6 +30,7 @@ var gameOfLife = {
   //Get cell and attach row/col props so it doesn't get lost/mutated
   getCell: function(row, col) {
     var theCell = document.getElementById(col+'-'+row)
+    if(!theCell) return null
     theCell.col = col;
     theCell.row = row;
     return theCell;
@@ -60,17 +61,42 @@ var gameOfLife = {
     window.board.addEventListener('click', e => onCellClick.call(e.target, e))
     window.step_btn.addEventListener('click', e => this.step())
   },
-
+  neighborhood: function(cell) {
+    var neighbors = [];
+    for(var col = cell.col - 1; col <= cell.col + 1; col++) {
+      for(var row = cell.row - 1; row <= cell.row + 1; row++) {
+        if(row === cell.row && col === cell.col) continue
+        var theCell = this.getCell(row, col);
+        if(theCell) neighbors.push(theCell)
+      }
+    }
+    //console.log('neighbors', neighbors, cell)
+    return neighbors
+  },
+  getNextState: function(cell, row, col) {
+    var livingNeighbors = this.neighborhood(cell).reduce((sum,el) => 
+      sum + (el.dataset.status === 'alive' ? 1 : 0)
+    ,0)
+    console.log('alive', livingNeighbors, row, col, this.neighborhood(cell).map(el => el.dataset.status == 'alive' ? 1 : 0))
+    if(cell.dataset.status === 'alive') {
+      if(livingNeighbors === 2 || livingNeighbors === 3) return true
+      return false
+    }
+    if(livingNeighbors === 3) return true
+    return false
+  },
   step: function () {
     var nextState = new Array(this.width).fill('').map(el => []);
 
+    //Read state and construct next state
     this.forEachCell((cell, row, col) => {
       var theStatus = (cell.dataset.status === 'alive');
-      nextState[col][row] = !theStatus;
+      nextState[col][row] = this.getNextState(cell, row, col);
     })
 
     console.table(nextState)
-    
+
+    //read next state and render
     this.forEachCell((cell, row, col) => {
       var theStatus = nextState[col][row] ? 'alive' : 'dead';
       cell.className = theStatus;
