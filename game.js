@@ -44,7 +44,13 @@ var gameOfLife = {
       }
     }
   },
-  
+  applyState : function(nextState) {
+    this.forEachCell((cell, row, col) => {
+      var theStatus = nextState[col][row] ? 'alive' : 'dead';
+      cell.className = theStatus;
+      cell.dataset.status = theStatus;
+    })
+  },
   setupBoardEvents: function() {
     var onCellClick = function (e) {
     
@@ -61,6 +67,8 @@ var gameOfLife = {
     window.board.addEventListener('click', e => onCellClick.call(e.target, e))
     window.step_btn.addEventListener('click', e => this.step())
     window.play_btn.addEventListener('click', e => this.togglePlay())
+    window.reset_btn.addEventListener('click', e => this.randomize())
+    window.clear_btn.addEventListener('click', e => this.clearBoard())
   },
   // Neighbors : Cell -> Array Cells
   neighborhood: function(cell) {
@@ -96,15 +104,11 @@ var gameOfLife = {
       nextState[col][row] = this.getNextState(cell, row, col)
     )
 
-    console.table(nextState)
+    //console.table(nextState)
 
     //read next state and render
-    this.forEachCell((cell, row, col) => {
-      var theStatus = nextState[col][row] ? 'alive' : 'dead';
-      cell.className = theStatus;
-      cell.dataset.status = theStatus;
-    })
-
+    this.applyState(nextState);
+    
   },
 
   togglePlay: function () {
@@ -114,6 +118,17 @@ var gameOfLife = {
     } else {
       this.interval = setInterval(() => this.step(), 250)
     } 
+  },
+  randomize: function() {
+    var nextState = new Array(this.width).fill('')
+      .map(el => new Array(this.height).fill('')
+        .map(cell => Math.random() <= 0.5)
+      )
+
+    this.applyState(nextState)  
+  },
+  clearBoard: function() {
+    this.applyState(new Array(this.width).fill([]))
   }
   
 };
