@@ -70,17 +70,30 @@ var gameOfLife = {
     // var cell00 = document.getElementById('0-0');
     // cell00.addEventListener('click', onCellClick);
     window.board.addEventListener('click', e => onCellClick.call(e.target, e))
+    window.step_btn.addEventListener('click', e => this.step())
   },
 
   step: function () {
-    // Here is where you want to loop through all the cells
-    // on the board and determine, based on it's neighbors,
-    // whether the cell should be dead or alive in the next
-    // evolution of the game. 
-    //
-    // You need to:
-    // 1. Count alive neighbors for all cells
-    // 2. Set the next state of all cells based on their alive neighbors
+    var nextState = new Array(this.width).fill('').map(el => []);
+    for(var col = 0; col < this.width; col++) {
+      for(var row = 0; row < this.height; row++) {
+        var theCell = document.getElementById(col+'-'+row)
+        var theStatus = (theCell.dataset.status === 'alive');
+        nextState[col][row] = !theStatus;
+      }
+    }
+
+    console.table(nextState)
+
+    for(var col = 0; col < this.width; col++) {
+      for(var row = 0; row < this.height; row++) {
+        var theCell = document.getElementById(col+'-'+row)
+        var theStatus = nextState[col][row] ? 'alive' : 'dead';
+        theCell.className = theStatus;
+        theCell.dataset.status = theStatus;
+      }
+    }
+
   },
 
   enableAutoPlay: function () {
