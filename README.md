@@ -192,7 +192,7 @@ A number of things to keep in mind as you work on the view controller:
 
 - If you set up a horizontal line of 3 alive cells, the next step of this shape would be a vertical line of 3 alive cells. Each step should toggle this shape back and forth. This shape is known as a ["Blinker"](https://upload.wikimedia.org/wikipedia/commons/9/95/Game_of_life_blinker.gif) and is a very useful shape to test with in order to know if your generations are working correctly.
 
-- Every time you save your code and refresh, you may find yourself having to click on a bunch of cells in order to test if your step function produces the next generation in an expected way. Consider temporarily putting a few lines into one of your initialization functions (`createAndShowBoard`, `setupBoardEvents`) that will set the status of a particular set of cells to alive so you don't have to spend the time clicking yourself.
+- Every time you save your code and refresh, you may find yourself having to click on a bunch of cells in order to test if your step function produces the next generation in an expected way. Consider temporarily adding a few lines of code when you initialize your game board that will set the status of a particular set of cells to alive - that way, you don't have to spend the time clicking yourself.
 
 ## Bonus
 
