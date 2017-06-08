@@ -8,10 +8,15 @@ if (mainElement) {
 
   document.getElementById('play_btn')
     .addEventListener('click', game.togglePlaying)
-  // TODO: Connect other buttons.
+
+  document.getElementById('clear_btn')
+    .addEventListener('click', game.clear)
+
+  document.getElementById('reset_btn')
+    .addEventListener('click', game.random)
 }
 
-function GameOfLife(container, width=12, height=12) {  
+function GameOfLife(container, width=64, height=64) {  
   // Create boards for the present and future.
   // Game boards are somewhat expensive to create, so we're going
   // to be reusing them. After we advance the game one step, `future`
@@ -32,8 +37,7 @@ function GameOfLife(container, width=12, height=12) {
     // create <table> element
     var table = document.createElement('table');       // <table
     table.classList.add('board')                       //   class='board'>
-
-
+    table.cells = []
     for (var r = 0; r < height; r++) {
       var tr = document.createElement('tr');           //   <tr>
       for (var c = 0; c < width; c++) {                //     For instance, at r=2, c=3:
@@ -44,6 +48,7 @@ function GameOfLife(container, width=12, height=12) {
         // in a click listener later.
         td.coord = [r, c];        
         tr.appendChild(td);                            //     </td>
+        table.cells.push(td)
       }
       table.appendChild(tr);                           //   </tr>
     }                                                  //  </table>
@@ -69,13 +74,13 @@ function GameOfLife(container, width=12, height=12) {
     // HINT:
     //   https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
     //   https://developer.mozilla.org/en-US/docs/Web/API/Element/getElementsByTagName
-    Array.from(table.getElementsByTagName('td'))
+    table.cells
       .forEach(td => present.get(td.coord) ? td.classList.add('alive') : td.classList.remove('alive'))
   }
 
-  function step() {
+  function step(rules) {
     // You need to write tick in board.js    
-    tick(present, future)
+    tick(present, future, rules)
     
     // Swap the present and future boards
     // (The future board is now the present, and we'll re-use the present
@@ -113,12 +118,12 @@ function GameOfLife(container, width=12, height=12) {
   }
 
   function clear() {
-    // TODO: Clear the board
+    step(() => false)
   }
 
   function random() {
-    // TODO: Randomize the board
+    step(() => Math.random() <= 0.5)
   }
 
-  return {play, step, stop, togglePlaying, clear}
+  return {play, step, stop, togglePlaying, clear, random}
 };
