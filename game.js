@@ -50,6 +50,8 @@ function Life(container, width=12, height=12) {
     // FIXME: This currently always toggles cell (0, 0).
     // How do we get the coordinate of the cell that was clicked on?
     // HINT: https://developer.mozilla.org/en-US/docs/Web/API/Event/target
+    //       https://developer.mozilla.org/en-US/docs/Web/API/Console/dir
+
     var cell = document.getElementById('0-0'); // ⬅️ Fix me
     present.toggle(cell.coord)
     paint()
