@@ -188,8 +188,6 @@ as a `rules` function?
 ### Tips
 A number of things to keep in mind as you work on the view controller:
 
-- Be careful with what `this` might be for any given function invocation. It is advised that you `console.log(this)` before you try to use it in a new function to ensure it is what you expect it to be.
-
 - Based on the rules of the game (amount of alive neighbors), cells will change their state. They, however, *should not* change their state until _after_ you've computed alive neighbors for all other cells on the board. If you switch a cell's state too soon, you will be essentially corrupting the intended next generation for the cells around it.
 
 - If you set up a horizontal line of 3 alive cells, the next step of this shape would be a vertical line of 3 alive cells. Each step should toggle this shape back and forth. This shape is known as a ["Blinker"](https://upload.wikimedia.org/wikipedia/commons/9/95/Game_of_life_blinker.gif) and is a very useful shape to test with in order to know if your generations are working correctly.
@@ -236,7 +234,7 @@ the CPU almost completely free, and would mean that almost no data is transferre
 frame. Essentially, after setup, the only thing we'd have to do each frame is tell the GPU, "ok, [go](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/drawArrays)".
 
 ## Conclusion
-This workshop is a classic exercise in writing game logic and combining it with DOM manipulation, particularly event listeners, to create a user interface. Keys to success when creating your Game of Life included writing utility functions to keep your code DRY, and the careful application of event listeners (and `this`) to update DOM elements. On top of that, you had even more practice with vanilla Javascript DOM manipulation and functional programming. Whew!
+This workshop is a classic exercise in writing game logic and combining it with DOM manipulation, particularly event listeners, to create a user interface. Keys to success when creating your Game of Life included writing utility functions to keep your code DRY, and the careful application of event listeners to update DOM elements. On top of that, you had even more practice with vanilla Javascript DOM manipulation and functional programming. Whew!
 
 ### Main Takeaways
 * Conway's Game of Life is one example of a cellular automaton. It has a particular set of rules that govern the state of each cell in a grid, depending on the state of its neighbors.
