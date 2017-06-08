@@ -89,8 +89,17 @@ describe('Board::livingNeighbors(coords)', () => {
   })
 
   it("doesn't include the cell itself", () => {
-    var board = new Board(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1])
+    var board = new Board(3, 3,
+      [1, 1, 1,
+       1, 1, 1,
+       1, 1, 1])
     expect(board.livingNeighbors([1, 1])).toEqual(8)
+
+    board = new Board(3, 3,
+      [1, 0, 1,
+       0, 1, 1,
+       0, 0, 0])
+    expect(board.livingNeighbors([1, 1])).toEqual(3)
   })
 
   it('counts only living cells', () => {
@@ -99,12 +108,6 @@ describe('Board::livingNeighbors(coords)', () => {
        1, 1, 1,
        0, 0, 0])
     expect(board.livingNeighbors([1, 1])).toEqual(5)
-
-    board = new Board(3, 3,
-      [1, 0, 1,
-       0, 1, 1,
-       0, 0, 0])
-    expect(board.livingNeighbors([1, 1])).toEqual(3)
 
     board = new Board(3, 3,
       [1, 0, 1,
