@@ -41,7 +41,7 @@ document.getElementById("board").addEventListener("click", (event) => {
 });
 
 document.getElementById("step_btn").addEventListener("click", () => {
-  gol.step();
+  gol.tick();
   paint();
 });
 
@@ -49,7 +49,7 @@ let interval = null;
 document.getElementById("play_btn").addEventListener("click", () => {
   if (!interval) {
     interval = setInterval(() => {
-      gol.step();
+      gol.tick();
       paint();
     }, 100);
   } else {

@@ -71,12 +71,12 @@ class GameOfLife {
     }
   }
 
-  step() {
+  tick() {
     const newBoard = this.makeBoard();
 
     this.forEachCell((row, col) => {
       const livingNeighbors = this.livingNeighbors(row, col);
-      const nextCell = this.conwayRule(this.getCell(row, col), this.livingNeighbors(row, col));
+      const nextCell = this.conwayRule(this.getCell(row, col), livingNeighbors);
       newBoard[row][col] = nextCell;
     })
     
