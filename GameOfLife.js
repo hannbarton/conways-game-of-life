@@ -1,11 +1,11 @@
-class Board {
-  constructor(width = 25, height = 20) {
+class GameOfLife {
+  constructor(width, height) {
     this.width = width;
     this.height = height;
-    this.cells = this.makeCells();
+    this.board = this.makeBoard();
   }
 
-  makeCells() {
+  makeBoard() {
     // Generate multi-dimensional array:
     return new Array(this.height).fill().map(() => new Array(this.width).fill(0));
   }
@@ -16,7 +16,7 @@ class Board {
 
   getCell(row, col) {
     if (this.cellExists(row, col)) {
-      return this.cells[row][col];
+      return this.board[row][col];
     } else {
       return 0;
     }
@@ -24,7 +24,7 @@ class Board {
 
   setCell(value, row, col) {
     if (this.cellExists(row, col)) {
-      this.cells[row][col] = value;
+      this.board[row][col] = value;
     }
   }
 
@@ -72,14 +72,14 @@ class Board {
   }
 
   step() {
-    const newCells = this.makeCells();
+    const newBoard = this.makeBoard();
 
     this.forEachCell((row, col) => {
       const livingNeighbors = this.livingNeighbors(row, col);
       const nextCell = this.conwayRule(this.getCell(row, col), this.livingNeighbors(row, col));
-      newCells[row][col] = nextCell;
+      newBoard[row][col] = nextCell;
     })
     
-    this.cells = newCells;
+    this.board = newBoard;
   }
 }
