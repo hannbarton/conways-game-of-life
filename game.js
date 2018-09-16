@@ -44,13 +44,11 @@ const gameOfLife = {
 				this.className = 'dead';
 				this.dataset.status = 'dead';
 			}
-		};
+    };
 
-    //example of click event at cell 0-0
-		//var cell00 = document.getElementById('0-0');
-		//cell00.addEventListener('click', onCellClick);
-
+    //adding an eventlistener to each event
 		window.board.addEventListener('click', evt => onCellClick.call(evt.target));
+
 	},
 
 	step() {
